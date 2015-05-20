@@ -58,6 +58,7 @@ def run(host,database,graphname):
 
     fixedNodes = []
     for node in graph.nodes(data=True):
+        #print node
         if node[1]['name']:
         #if False:
             fixedNodes.append({'name' : node[1]['name'], 'id': node[1]['id'],'data': node, 'group':1})

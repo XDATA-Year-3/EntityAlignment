@@ -253,6 +253,7 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
 
     # pull graph match results back from igraph
     result =  robjects.r('P$corr')
+    print robjects.r('P$D')
     print 'result copied to python:'
     print result
     sizeP = robjects.r('nrow(P$P)')

@@ -1163,13 +1163,9 @@ function entityAlignDistanceFunction( distance) {
 }
 
 
-function firstTimeInitialize() {
-    "use strict";
+function processDefaultsFile(defaults) {
 
-    // make the panel open & close over data content
-    //$('#control-panel').controlPanel();
-
-    d3.json("defaults.json", function (err, defaults) {
+    d3.json(defaults, function (err, defaults) {
         defaults = defaults || {};
 
         // read default data collection names from config file
@@ -1180,57 +1176,68 @@ function firstTimeInitialize() {
         fillDatassetList('#graph1-selector')
         fillDatassetList('#graph2-selector')
         fillSeedList('#seed-selector')
+    })
 
-        width = $(window).width();
-        height = $(window).height();
+}
 
-        // 3/2014: changed link strength down from charge(-500), link(100) to charge(-2000)
-        // to reduce the node overlap but still allow some node wandering animation without being too stiff
 
-        entityAlign.force1 = d3.layout.force()
-            .charge(-200)
-            .linkDistance(75)
-            .gravity(0.2)
-            .friction(0.6)
-            .size([width/3, height/2]);
 
-        entityAlign.force2 = d3.layout.force()
-            .charge(-200)
-            .linkDistance(75)
-            .gravity(0.2)
-            .friction(0.6)
-            .size([width/3, height/2]);
+function firstTimeInitialize() {
+    "use strict";
 
-        color = d3.scale.category20();
-        //color = entityAlignDistanceFunction;
+    // make the panel open & close over data content
+    //$('#control-panel').controlPanel();
 
-        // set a watcher on the dataset selector so datasets are filled in
-        // automatically when the user selects it via UI selector elements. 
+    processDefaultsFile("defaults.json")
 
-        d3.select("#graph1-selector")
-            .on("change", updateGraph1);
-        d3.select("#graph2-selector")
-            .on("change", updateGraph2);
-        d3.select('#change-seeds')
-            .on("click", loadNewSeeds);
-        d3.select("#align-button")
-            .on("click", runSeededGraphMatching);
-        d3.select("#show-matches-toggle")
-            .attr("disabled", true)
-            .on("click",  function () { entityAlign.showMatchesEnabled = !entityAlign.showMatchesEnabled; 
-                                        conole.log(entityAlign.showMatchesEnabled);
-                                       });
+    width = $(window).width();
+    height = $(window).height();
 
-        // block the contextmenu from coming up (often attached to right clicks). Since many 
-        // of the right clicks will be on the graph, this has to be at the document level so newly
-        // added graph nodes are all covered by this handler.
+    // 3/2014: changed link strength down from charge(-500), link(100) to charge(-2000)
+    // to reduce the node overlap but still allow some node wandering animation without being too stiff
 
-        $(document).bind('contextmenu', function(e){
-            e.preventDefault();
-            return false;
-            });
+    entityAlign.force1 = d3.layout.force()
+        .charge(-200)
+        .linkDistance(75)
+        .gravity(0.2)
+        .friction(0.6)
+        .size([width/3, height/2]);
 
-    });
+    entityAlign.force2 = d3.layout.force()
+        .charge(-200)
+        .linkDistance(75)
+        .gravity(0.2)
+        .friction(0.6)
+        .size([width/3, height/2]);
+
+    color = d3.scale.category20();
+    //color = entityAlignDistanceFunction;
+
+    // set a watcher on the dataset selector so datasets are filled in
+    // automatically when the user selects it via UI selector elements. 
+
+    d3.select("#graph1-selector")
+        .on("change", updateGraph1);
+    d3.select("#graph2-selector")
+        .on("change", updateGraph2);
+    d3.select('#change-seeds')
+        .on("click", loadNewSeeds);
+    d3.select("#align-button")
+        .on("click", runSeededGraphMatching);
+    d3.select("#show-matches-toggle")
+        .attr("disabled", true)
+        .on("click",  function () { entityAlign.showMatchesEnabled = !entityAlign.showMatchesEnabled; 
+                                    conole.log(entityAlign.showMatchesEnabled);
+                                   });
+
+    // block the contextmenu from coming up (often attached to right clicks). Since many 
+    // of the right clicks will be on the graph, this has to be at the document level so newly
+    // added graph nodes are all covered by this handler.
+
+    $(document).bind('contextmenu', function(e){
+        e.preventDefault();
+        return false;
+        });
 }
 
 

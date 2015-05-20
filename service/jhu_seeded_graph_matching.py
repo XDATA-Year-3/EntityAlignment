@@ -3,7 +3,7 @@ import bson.json_util
 import pymongo
 import json
 from bson import ObjectId
-from pymongo import Connection
+# from pymongo import Connection
 import string
 import tangelo
 

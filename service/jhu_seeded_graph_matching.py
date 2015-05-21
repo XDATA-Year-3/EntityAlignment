@@ -230,8 +230,9 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
     A_adj = np.array(nx.to_numpy_matrix(gan))
     B_adj = np.array(nx.to_numpy_matrix(gbn))
 
-    nx.write_gml(gan,"/tmp/gan_seeds.gml")
-    nx.write_gml(gbn,"/tmp/gbn_seeds.gml")
+    # Writing graphs for testing purposes
+    nx.write_graphml(gan,"/tmp/gan_seeds.gml")
+    nx.write_graphml(gbn,"/tmp/gbn_seeds.gml")
     #robjects.r("gA <- read.graph('/tmp/gan_seeds.gml',format='graphML')")
     #robjects.r("gB <- read.graph('/tmp/gbn_seeds.gml',format='graphML')")
 

@@ -1,4 +1,5 @@
 library(igraph)
+library(foreach)
 
 # Simulates an nxn permutation matrix uniformly
 # INPUT: n : dimension of the desired matrix

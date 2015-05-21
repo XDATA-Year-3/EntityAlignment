@@ -1224,6 +1224,8 @@ function firstTimeInitialize() {
         .on("click", loadNewSeeds);
     d3.select("#align-button")
         .on("click", runSeededGraphMatching);
+    d3.select("#top-k-button")
+        .on("click", runAlphaSpokeMatching);
     d3.select("#show-matches-toggle")
         .attr("disabled", true)
         .on("click",  function () { entityAlign.showMatchesEnabled = !entityAlign.showMatchesEnabled; 
@@ -1416,4 +1418,44 @@ function runSeededGraphMatching() {
 
     })
 }
+function runAlphaSpokeMatching() {
+    console.log("do alpha-spoke matching")
+    console.log(entityAlign.graphB,entityAlign.graphA)
+    $.ajax({
+        type: 'PUT',
+        // generalized collection definition
+        url: "service/jhu_alpha_spoke_matching" ,
+        // + "/" + entityAlign.currentMatches
+        data: {
+            graphAnodes: JSON.stringify(entityAlign.SavedGraphA.nodes),
+            graphAedges: JSON.stringify(entityAlign.SavedGraphA.edges),    
+            graphBnodes: JSON.stringify(entityAlign.SavedGraphB.nodes),         
+            graphBedges: JSON.stringify(entityAlign.SavedGraphB.edges),
+            seeds: JSON.stringify(entityAlign.currentMatches)
+        },
+        dataType: "json",
+        success: function (response) {
 
+            if (response.error ) {
+                console.log("error: " + response.error);
+                return;
+            }
+            console.log('data returned: from SGM',response.result)
+        // Need to do something different with the matching result
+            entityAlign.currentMatches = []
+            for (match in response.result.matches) {
+                //console.log( response.result.seeds[seed])
+                //entityAlign.currentMatches.push(response.result.matches[match])
+            }
+            // set the attributes in the graph nodes so color can show existing matches
+            updateMatchingStatusInGraphs()
+            updateGraph2_d3_afterLoad()
+            // allow time for the layout of the first graph before doing the layout on the second.  This won't scale for large graphs,
+            // but it works for our simple testcases.       
+            setTimeout(function(){
+                updateGraph1_d3_afterLoad()
+            },1250);
+        }
+
+    })
+}

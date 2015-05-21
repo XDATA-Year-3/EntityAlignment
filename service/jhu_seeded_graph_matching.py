@@ -6,11 +6,13 @@ from bson import ObjectId
 # from pymongo import Connection
 import string
 import tangelo
-
+import numpy as np
 import networkx as nx
 from networkx.readwrite import json_graph
 import rpy2.robjects as robjects
 
+import rpy2.robjects.numpy2ri
+rpy2.robjects.numpy2ri.activate()
 
 
 # services wrapper around the Seeded Graph Matching algorithm developed by the Johns Hopkins XDATA team.  First several
@@ -225,17 +227,21 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
 
     # temporarily write out as a GraphML format (which preserved node order, then read back in on the igraph
     # side.  This is probably unnecessary, but it was done in the initial prototypes, so preserved here. )
-    nx.write_graphml(gan,"/tmp/gan_seeds.gml")
-    nx.write_graphml(gbn,"/tmp/gbn_seeds.gml")
-    robjects.r("gA <- read.graph('/tmp/gan_seeds.gml',format='graphML')")
-    robjects.r("gB <- read.graph('/tmp/gbn_seeds.gml',format='graphML')")
+    A_adj = np.array(nx.to_numpy_matrix(gan))
+    B_adj = np.array(nx.to_numpy_matrix(gbn))
+
+    nx.write_gml(gan,"/tmp/gan_seeds.gml")
+    nx.write_gml(gbn,"/tmp/gbn_seeds.gml")
+    #robjects.r("gA <- read.graph('/tmp/gan_seeds.gml',format='graphML')")
+    #robjects.r("gB <- read.graph('/tmp/gbn_seeds.gml',format='graphML')")
 
     # convert to an adjacency matrix for the SGM algorithm
-    robjects.r("matA <- as.matrix(get.adjacency(gA))")
-    robjects.r("matB <- as.matrix(get.adjacency(gB))")
-
-    print robjects.r("gA")
-    print robjects.r("gB")
+    #robjects.r("matA <- as.matrix(A_adj)")
+    #robjects.r("matB <- as.matrix(B_adj)")
+    robjects.r.assign("matA", A_adj)
+    robjects.r.assign("matB", B_adj)
+    #print robjects.r("gA")
+    #print robjects.r("gB")
 
     # initialize the start matrix.  This is set to uniform values initially, but I think this is 
     # somewhat sensitive to data values

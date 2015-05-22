@@ -61,7 +61,7 @@ def rearrangeGraphWithSeeds(ingraph,seedList):
 
     substitutions = {}
     # copy the seeds into the front of the graph
-    for seednode in seedList:
+    for seednode in sorted(seedList):
         # generally we want to move from the head, but there is a special case that will override
         # this, so a variable is needed
         source = head
@@ -75,11 +75,16 @@ def rearrangeGraphWithSeeds(ingraph,seedList):
                     destination = head
                 else:
                     destination = seednode
+                print "Seed: ", seednode, "Head: ", head, "Source: ", source, "Destination: ", destination
                 # there is already a node where we want to put this seed. Swap the nodes
                 mapping = {source : 'temp'}
                 ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
                 mapping = {destination: source}
-                ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
+                try:
+                    ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
+                except KeyError:
+                    print "Substitutions:"
+                    print substitutions
                 mapping = {'temp' : destination}
                 ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
                 substitutions[source] = destination

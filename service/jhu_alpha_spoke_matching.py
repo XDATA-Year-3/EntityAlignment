@@ -62,7 +62,7 @@ def rearrangeGraphWithSeeds(ingraph,seedList):
 
     substitutions = {}
     # copy the seeds into the front of the graph
-    for seednode in seedList:
+    for seednode in sorted(seedList):
         # generally we want to move from the head, but there is a special case that will override
         # this, so a variable is needed
         source = head
@@ -94,10 +94,10 @@ def rearrangeGraphWithSeeds(ingraph,seedList):
 
 
 
-def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
+def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds,alpha,num_restarts):
     # Hardcode alphs = 0.2 and 100 restarts
-    alpha = 0.2
-    num_restarts = 100
+#    alpha = 0.2
+#    num_restarts = 100
 
     # building graphA, graphB networkX structures from the separate node & link structures 
     # passed from javascript.  For the moment, we don't allow multiple links between edges or directed edges

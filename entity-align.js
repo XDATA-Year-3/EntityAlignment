@@ -1419,6 +1419,10 @@ function runSeededGraphMatching() {
     })
 }
 function runAlphaSpokeMatching() {
+    var alphavalue = document.getElementById('alpha-value').value;
+    var restartsvalue = document.getElementById('restarts-value').value;
+    console.log('Found a user inputed alpha: ', alphavalue)
+    console.log('Found a user inputed number of restarts: ', restartsvalue)
     console.log("do alpha-spoke matching")
     console.log(entityAlign.graphB,entityAlign.graphA)
     $.ajax({
@@ -1431,7 +1435,9 @@ function runAlphaSpokeMatching() {
             graphAedges: JSON.stringify(entityAlign.SavedGraphA.edges),    
             graphBnodes: JSON.stringify(entityAlign.SavedGraphB.nodes),         
             graphBedges: JSON.stringify(entityAlign.SavedGraphB.edges),
-            seeds: JSON.stringify(entityAlign.currentMatches)
+            seeds: JSON.stringify(entityAlign.currentMatches),
+            alpha: alphavalue,
+            num_restarts: restartsvalue
         },
         dataType: "json",
         success: function (response) {

@@ -75,16 +75,12 @@ def rearrangeGraphWithSeeds(ingraph,seedList):
                     destination = head
                 else:
                     destination = seednode
-                print "Seed: ", seednode, "Head: ", head, "Source: ", source, "Destination: ", destination
+                #print "Seed: ", seednode, "Head: ", head, "Source: ", source, "Destination: ", destination
                 # there is already a node where we want to put this seed. Swap the nodes
                 mapping = {source : 'temp'}
                 ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
                 mapping = {destination: source}
-                try:
-                    ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
-                except KeyError:
-                    print "Substitutions:"
-                    print substitutions
+                ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
                 mapping = {'temp' : destination}
                 ingraph = nx.relabel_nodes(ingraph,mapping,copy=False)
                 substitutions[source] = destination

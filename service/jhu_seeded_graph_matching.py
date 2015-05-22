@@ -278,11 +278,11 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
         matches.append(record)
 
     # now copy over the links returned from SGM
-    for index in range(0,number_of_nonseed_nodes-1):
+    for index in range(0,number_of_nonseed_nodes):
         mappedNode = findCorrelatedNode(number_of_nonseed_nodes,num_seeds,index)
-        if (mappedNode>0 and ('id' in gan.node[index+num_seeds]) and ('id' in gbn.node[mappedNode-1])):
-            print index+num_seeds,mappedNode-1,gan.node[index+num_seeds],gbn.node[mappedNode-1]
-            record = {'ga': gan.node[index+num_seeds]['id'], 'gb': gbn.node[mappedNode-1]['id']}
+        if (mappedNode>0 and ('id' in gan.node[index+num_seeds]) and ('id' in gbn.node[mappedNode])):
+            print index+num_seeds,mappedNode,gan.node[index+num_seeds],gbn.node[mappedNode]
+            record = {'ga': gan.node[index+num_seeds]['id'], 'gb': gbn.node[mappedNode]['id']}
             matches.append(record)
 
     print 'matches:',matches

@@ -605,6 +605,14 @@ function  updateGraph1_d3_afterLoad() {
                         .on("click", function(d) {
                             loggedVisitToEntry(d);
                             //centerOnClickedGraphNode(d.tweet);
+                        })
+                        // put a callback signal for entering and existing matched nodes, so we can highlight the 
+                        // node in the opposite graph
+                        .on("mouseenter", function(d) {
+                            if ('matched' in d) {
+                                console.log('enter hover of matched node')
+                                highlightGraphBNode(d.matched)
+                            }
                         });
 
 
@@ -613,7 +621,7 @@ function  updateGraph1_d3_afterLoad() {
                         .attr("r", 12)
                         .style("opacity", 1.0)
                         .style("fill", 
-                            function (d) {if (d.matched) {return "DarkRed"} else {return color(1)};}
+                            function (d) {if ('matched' in d) {return "DarkRed"} else {return color(1)};}
                         );
 
                     enter.call(entityAlign.force1.drag)
@@ -638,7 +646,7 @@ function  updateGraph1_d3_afterLoad() {
 
                     node
                         .filter(function(d,i) { return d.id != 0})
-                        .style("fill", function (d) {if (d.matched) {return "DarkRed"} else {return color(1)}});
+                        .style("fill", function (d) {if ('matched' in d) {return "DarkRed"} else {return color(1)}});
 
                     node
                         .filter(function(d,i) { return d.id == 0})
@@ -728,6 +736,12 @@ function  updateGraph1_d3_afterLoad() {
 }
 
 
+function  highlightGraphBNode(matched) {
+
+}
+
+
+
 // this is still not being called yet, because of the zoom/translate differences and missing nodes.  
 
 function  updateGraph2_d3_afterLoad() {
@@ -770,6 +784,11 @@ function  updateGraph2_d3_afterLoad() {
                         .on("click", function(d) {
                             loggedVisitToEntry(d);
                             //centerOnClickedGraphNode(d.tweet);
+                        })
+                        .on("mouseenter", function(d) {
+                            if ('matched' in d) {
+                                console.log('enter hover of matched node')
+                            }
                         });
 
 
@@ -778,7 +797,7 @@ function  updateGraph2_d3_afterLoad() {
                         .attr("r", 12)
                         .style("opacity", 1.0)
                         .style("fill", 
-                            function (d) {if (d.matched) {return "DarkRed"} else {return color(1)};}
+                            function (d) {if ('matched' in d) {return "DarkRed"} else {return color(1)};}
                         );
 
                     enter.call(entityAlign.force2.drag)
@@ -803,7 +822,7 @@ function  updateGraph2_d3_afterLoad() {
 
                     //node.style("fill", function (d) {if (d.matched) {return "DarkRed"} else {return color(1)}});
 
-                    node.style("fill", function (d) {if (d.matched) {return "DarkRed"} else {return color(1)}});
+                    node.style("fill", function (d) {if ('matched' in d) {return "DarkRed"} else {return color(1)}});
 
                     node.exit()
                         .transition()

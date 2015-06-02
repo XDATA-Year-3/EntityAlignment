@@ -61,7 +61,7 @@ def rearrangeGraphWithSeeds(ingraph,seedList):
 
     substitutions = {}
     # copy the seeds into the front of the graph
-    for seednode in sorted(seedList):
+    for seednode in seedList:
         # generally we want to move from the head, but there is a special case that will override
         # this, so a variable is needed
         source = head
@@ -122,9 +122,9 @@ def findCorrespondingNodeInSparseMatrix(mat,size, seedcount,node):
 def findCorrelatedNode(size, seedcount,node):
     # we are looking for which element of the nodes row is set
     found = False
-    corr = robjects.r('P$corr')
+    corr = np.array(robjects.r('P$corr'))
     # make a 1D query because not sure how to index python object successfully
-    matching = corr[node+(size)]
+    matching = corr[node,1]
     return matching-1
 
 
@@ -141,7 +141,6 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
     seed_obj = bson.json_util.loads(seeds)
 
     # for some reason, edges are coming across pre-linked with nodes, lets just extract out
-
 
     print "reassembling graph A and B"
 
@@ -160,7 +159,7 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
         #print link
         ga.add_edge(link['source'],link['target'])
     print "received graph A:"
-    #print ga.nodes()
+    print ga.nodes()
     #print ga.edges()
 
     # start with an empty graph instance
@@ -178,9 +177,10 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
         #print link
         gb.add_edge(link['source'],link['target'])
     print "received graph B:"
-    #print gb.nodes()
+    print gb.nodes()
     #print gb.edges()
-
+    nx.write_gml(ga,"/tmp/ga.gml")
+    nx.write_gml(gb,"/tmp/gb.gml")
 
     # initialize igraph to get JHU SGM algorithm
     robjects.r('library(igraph)')
@@ -216,6 +216,13 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
         ga_seeds.append(seed['ga'])
         gb_seeds.append(seed['gb'])
 
+    print "seed_obj:"
+    print seed_obj
+
+    print "ga_seeds:"
+    print ga_seeds
+    print "gb_seeds:"
+    print gb_seeds
     # re-arrange the graphs so the seeds are the first nodes in the graph and will be the lowest
     # indices in the adjacency matrix
     ga_substitutions = rearrangeGraphWithSeeds(gan,ga_seeds)
@@ -226,14 +233,23 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
     print '----- substitutions gb -----'
     print gb_substitutions
 
+    print 'Graph A with seeds:'
+    for n in gan.nodes():
+        print n, gan.node[n]
+
+    print 'Graph B with seeds:'
+    for n in gbn.nodes():
+        print n, gbn.node[n]
+
+
     # temporarily write out as a GraphML format (which preserved node order, then read back in on the igraph
     # side.  This is probably unnecessary, but it was done in the initial prototypes, so preserved here. )
     A_adj = np.array(nx.to_numpy_matrix(gan))
     B_adj = np.array(nx.to_numpy_matrix(gbn))
 
     # Writing graphs for testing purposes
-    #nx.write_gml(gan,"/tmp/gan_seeds.gml")
-    #nx.write_gml(gbn,"/tmp/gbn_seeds.gml")
+    nx.write_gml(gan,"/tmp/gan_seeds.gml")
+    nx.write_gml(gbn,"/tmp/gbn_seeds.gml")
     #robjects.r("gA <- read.graph('/tmp/gan_seeds.gml',format='graphML')")
     #robjects.r("gB <- read.graph('/tmp/gbn_seeds.gml',format='graphML')")
 
@@ -261,9 +277,10 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
 
     # pull graph match results back from igraph
     result =  robjects.r('P$corr')
-    print robjects.r('P$D')
-    print 'result copied to python:'
-    print result
+    #print robjects.r('P$D')
+    #print robjects.r('P$P')
+    #print 'result copied to python:'
+    #print result
     sizeP = robjects.r('nrow(P$P)')
 
     # copy results into a new 'matching list' that relates the network from the results discovered by SGM.   Since the graph was re-arranged 
@@ -277,6 +294,7 @@ def run(graphAnodes,graphAedges,graphBnodes,graphBedges,seeds):
     for index in range(num_seeds):
         record = {'ga': gan.node[index]['id'], 'gb': gbn.node[index]['id'],}
         matches.append(record)
+        print index, gan.node[index], gbn.node[index]
 
     # now copy over the links returned from SGM
     for index in range(0,number_of_nonseed_nodes):
